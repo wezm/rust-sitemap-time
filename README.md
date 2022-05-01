@@ -1,29 +1,17 @@
-# sitemap, an Sitemap library for Rust
+# sitemap, a Sitemap library for Rust
 
-[![Chrono-utils on Travis CI][travis-image]][travis]
-[![Chrono-utils on crates.io][cratesio-image]][cratesio]
+sitemap is a [sitemap.xml] library for the [Rust](http://www.rust-lang.org/) programming language.
 
-[travis-image]: https://travis-ci.org/svmk/rust-sitemap.svg?branch=master
-[travis]: https://travis-ci.org/svmk/rust-sitemap
-[cratesio-image]: https://img.shields.io/crates/v/sitemap.svg
-[cratesio]: https://crates.io/crates/sitemap
+This is a fork of <https://github.com/svmk/rust-sitemap> that uses the [time] crate instead of [chrono].
 
+[sitemap.xml]: https://www.sitemaps.org/protocol.html
 
-sitemap is an library for [Rust](http://www.rust-lang.org/) programming language.
-
-## features
+## Features
 * Streaming reading sitemap
 
 ## Restrictions
 * no other encodings but UTF-8 are supported yet
 * validation is not supported
-
-## Building and using
-sitemap uses Cargo, so just add a dependency section in your project's manifest:
-```
-[dependencies]
-sitemap = "0.4"
-```
 
 ## Reading sitemap documents
 `sitemap::reader::SiteMapReader` requires a `Read` instance to read from. When a proper stream-based encoding library is available, it is likely that sitemap will be switched to use whatever character stream structure this library would provide, but currently it is a `Read`.
@@ -73,14 +61,6 @@ fn main() {
     urlwriter.end().expect("Unable to write close tags");
 }
 ```
-
-## Roadmap
-Highest priority first, approximately.
-1. Sitemap writer - done
-2. Sitemap validation
-
-## Known issues
-All known issues are present on GitHub issue tracker: http://github.com/svmk/rust-sitemap/issues. Feel free to post any found problems there.
 
 ## License
 
