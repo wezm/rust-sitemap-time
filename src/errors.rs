@@ -1,9 +1,9 @@
-use std::{fmt, error};
+use std::{error, fmt};
 use xml;
 /// Sitemap errors
 #[derive(Debug)]
 pub enum Error {
-	/// Unable to write data into writer
+    /// Unable to write data into writer
     XmlWriteError(xml::writer::Error),
     /// Error
     Invalid(String),
@@ -36,4 +36,3 @@ impl error::Error for Error {
         "sitemap error"
     }
 }
-

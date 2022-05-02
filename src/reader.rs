@@ -32,10 +32,10 @@
 //! }
 //! ```
 use crate::structs;
-use xml;
-use std::io::Read;
-use xml::reader::{EventReader, XmlEvent, Events};
 use std::convert::From;
+use std::io::Read;
+use xml;
+use xml::reader::{EventReader, Events, XmlEvent};
 
 /// A wrapper around an `std::io::Read` instance which provides sitemap parsing.
 ///
@@ -47,7 +47,7 @@ pub struct SiteMapReader<T: Read + Sized> {
     parser: Events<T>,
 }
 /// Sitemap entry.
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub enum SiteMapEntity {
     /// Url entry.
     Url(structs::UrlEntry),
@@ -104,32 +104,30 @@ impl<T: Read + Sized> Iterator for SiteMapReader<T> {
         loop {
             let e = self.parser.next();
             match e {
-                Some(e) => {
-                    match e {
-                        Ok(XmlEvent::StartElement { name, .. }) => {
-                            let tag_name = name.local_name.to_lowercase();
-                            self.path.push(tag_name.to_string());
-                            self.open_tag();
-                        }
-                        Ok(XmlEvent::EndElement { .. }) => {
-                            let entity = self.close_tag();
-                            self.path.pop();
-                            match entity {
-                                Some(entity) => {
-                                    return Some(entity);
-                                }
-                                None => {}
-                            }
-                        }
-                        Ok(XmlEvent::Characters(data)) => {
-                            self.text_content(data);
-                        }
-                        Err(error) => {
-                            return Some(SiteMapEntity::Err(error));
-                        }
-                        _ => {}
+                Some(e) => match e {
+                    Ok(XmlEvent::StartElement { name, .. }) => {
+                        let tag_name = name.local_name.to_lowercase();
+                        self.path.push(tag_name.to_string());
+                        self.open_tag();
                     }
-                }
+                    Ok(XmlEvent::EndElement { .. }) => {
+                        let entity = self.close_tag();
+                        self.path.pop();
+                        match entity {
+                            Some(entity) => {
+                                return Some(entity);
+                            }
+                            None => {}
+                        }
+                    }
+                    Ok(XmlEvent::Characters(data)) => {
+                        self.text_content(data);
+                    }
+                    Err(error) => {
+                        return Some(SiteMapEntity::Err(error));
+                    }
+                    _ => {}
+                },
                 None => {
                     return None;
                 }

@@ -18,11 +18,11 @@
 //!     urlwriter.end().expect("Unable to write close tags");
 //! }
 //! ```
+use crate::structs::{ChangeFreq, LastMod, Location, Priority, SiteMapEntry, UrlEntry};
+use crate::Error;
 use std::io::Write;
 use time::format_description::well_known::Rfc3339;
-use xml::writer::{EventWriter, EmitterConfig, XmlEvent};
-use crate::Error;
-use crate::structs::{UrlEntry, Location, LastMod, ChangeFreq, Priority, SiteMapEntry};
+use xml::writer::{EmitterConfig, EventWriter, XmlEvent};
 
 const DEFAULT_NAMESPACE: &str = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
@@ -47,7 +47,8 @@ impl<T: Write + Sized> SiteMapWriter<T> {
     /// Starts writing urls with custom sitemap namespace
     /// Adds specified namespace attribute for `urlset` tag
     pub fn start_urlset_ns(mut self, namespace: &str) -> Result<UrlSetWriter<T>, Error> {
-        self.writer.write(XmlEvent::start_element("urlset").default_ns(namespace))?;
+        self.writer
+            .write(XmlEvent::start_element("urlset").default_ns(namespace))?;
         Ok(UrlSetWriter { sitemap: self })
     }
 
@@ -69,7 +70,8 @@ impl<T: Write + Sized> SiteMapWriter<T> {
         mut self,
         namespace: &str,
     ) -> Result<SiteMapIndexWriter<T>, Error> {
-        self.writer.write(XmlEvent::start_element("sitemapindex").default_ns(namespace))?;
+        self.writer
+            .write(XmlEvent::start_element("sitemapindex").default_ns(namespace))?;
         Ok(SiteMapIndexWriter { sitemap: self })
     }
 
@@ -101,25 +103,32 @@ impl<T: Write + Sized> UrlSetWriter<T> {
             self.sitemap.write_content_element("loc", loc.as_str())?;
         }
         if let LastMod::DateTime(lastmod) = url.lastmod {
-            self.sitemap.write_content_element("lastmod", &lastmod.format(&Rfc3339).unwrap())?;
+            self.sitemap
+                .write_content_element("lastmod", &lastmod.format(&Rfc3339).unwrap())?;
         }
         match url.changefreq {
             ChangeFreq::ParseErr(_) => {}
             ChangeFreq::None => {}
             _ => {
-                self.sitemap.write_content_element("changefreq", url.changefreq.as_str())?;
+                self.sitemap
+                    .write_content_element("changefreq", url.changefreq.as_str())?;
             }
         }
         if let Priority::Value(priority) = url.priority {
-            self.sitemap.write_content_element("priority", priority.to_string().as_str())?;
+            self.sitemap
+                .write_content_element("priority", priority.to_string().as_str())?;
         }
-        self.sitemap.writer.write(XmlEvent::end_element().name("url"))?;
+        self.sitemap
+            .writer
+            .write(XmlEvent::end_element().name("url"))?;
         Ok(())
     }
 
     /// Completes writing data.
     pub fn end(mut self) -> Result<SiteMapWriter<T>, Error> {
-        self.sitemap.writer.write(XmlEvent::end_element().name("urlset"))?;
+        self.sitemap
+            .writer
+            .write(XmlEvent::end_element().name("urlset"))?;
         Ok(self.sitemap)
     }
 }
@@ -130,24 +139,30 @@ pub struct SiteMapIndexWriter<T: Write + Sized> {
 }
 
 impl<T: Write + Sized> SiteMapIndexWriter<T> {
-
     /// Writes sitemap entry.
     pub fn sitemap<S: Into<SiteMapEntry>>(&mut self, sitemapentry: S) -> Result<(), Error> {
         let sitemapentry = sitemapentry.into();
-        self.sitemap.writer.write(XmlEvent::start_element("sitemap"))?;
+        self.sitemap
+            .writer
+            .write(XmlEvent::start_element("sitemap"))?;
         if let Location::Url(loc) = sitemapentry.loc {
             self.sitemap.write_content_element("loc", loc.as_str())?;
         }
         if let LastMod::DateTime(lastmod) = sitemapentry.lastmod {
-            self.sitemap.write_content_element("lastmod", &lastmod.format(&Rfc3339).unwrap())?;
+            self.sitemap
+                .write_content_element("lastmod", &lastmod.format(&Rfc3339).unwrap())?;
         }
-        self.sitemap.writer.write(XmlEvent::end_element().name("sitemap"))?;
+        self.sitemap
+            .writer
+            .write(XmlEvent::end_element().name("sitemap"))?;
         Ok(())
     }
 
     /// Completes writing data.
     pub fn end(mut self) -> Result<SiteMapWriter<T>, Error> {
-        self.sitemap.writer.write(XmlEvent::end_element().name("sitemapindex"))?;
+        self.sitemap
+            .writer
+            .write(XmlEvent::end_element().name("sitemapindex"))?;
         Ok(self.sitemap)
     }
 }

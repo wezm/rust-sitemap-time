@@ -1,9 +1,8 @@
-use time::macros::datetime;
+use sitemap::structs::{ChangeFreq, SiteMapEntry, UrlEntry};
 use sitemap::writer::SiteMapWriter;
-use sitemap::structs::{UrlEntry, ChangeFreq, SiteMapEntry};
+use time::macros::datetime;
 
-static CONTENT: &str =
-    "<?xml version=\"1.0\" encoding=\"utf-8\"?>
+static CONTENT: &str = "<?xml version=\"1.0\" encoding=\"utf-8\"?>
 <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">
   <url>
     \
@@ -32,7 +31,6 @@ static CONTENT: &str =
   </sitemap>
 </sitemapindex>";
 
-
 #[test]
 fn test_write_sitemap() {
     let mut output = Vec::<u8>::new();
@@ -59,17 +57,23 @@ fn test_write_sitemap() {
         urlwriter.url(url_entry).expect("Can't write the file");
         let sitemap_writer = urlwriter.end().expect("close the urlset block");
 
-        let mut sitemap_index_writer = sitemap_writer.start_sitemapindex()
+        let mut sitemap_index_writer = sitemap_writer
+            .start_sitemapindex()
             .expect("start sitemap index tag");
         let sitemap_entry = SiteMapEntry::builder()
             .loc("http://www.example.com/other_sitemap.xml")
             .lastmod(date1)
             .build()
             .expect("valid");
-        sitemap_index_writer.sitemap(sitemap_entry).expect("Can't write the file");
+        sitemap_index_writer
+            .sitemap(sitemap_entry)
+            .expect("Can't write the file");
         sitemap_index_writer.end().expect("close sitemap block");
     }
-    assert_eq!(std::str::from_utf8(&output),  std::str::from_utf8(CONTENT.as_bytes()));
+    assert_eq!(
+        std::str::from_utf8(&output),
+        std::str::from_utf8(CONTENT.as_bytes())
+    );
 }
 
 #[test]

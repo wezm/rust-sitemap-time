@@ -1,21 +1,21 @@
 //! Contains structures for working with sitemap.
 use crate::Error;
-use url::Url;
-use url;
 use std::convert::From;
 use std::convert::Into;
-use time::{Date, OffsetDateTime};
 use std::fmt;
 use std::num;
-use time::format_description::FormatItem;
 use time::format_description::well_known::Rfc3339;
+use time::format_description::FormatItem;
 use time::macros::{format_description, time};
+use time::{Date, OffsetDateTime};
+use url;
+use url::Url;
 
 const W3C_DATE: &[FormatItem] = format_description!("[year]-[month]-[day]");
 
 /// Url entry. Contains url location, modification time,
 /// priority, update frequency.
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct UrlEntry {
     /// URL of the page.
     pub loc: Location,
@@ -40,12 +40,14 @@ impl UrlEntry {
 
     /// Creates builder for `UrlEntry` structure
     pub fn builder() -> UrlEntryBuilder {
-        UrlEntryBuilder { url_entry: UrlEntry::new() }
+        UrlEntryBuilder {
+            url_entry: UrlEntry::new(),
+        }
     }
 }
 
 /// Builds `UrlEntry` structure
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct UrlEntryBuilder {
     url_entry: UrlEntry,
 }
@@ -84,7 +86,9 @@ impl UrlEntryBuilder {
         }
         if let Priority::Value(val) = self.url_entry.priority {
             if val > 1.0 || val < 0.0 {
-                return Err(Error::Invalid("priority should be betwheen 0 and 1".to_string()))
+                return Err(Error::Invalid(
+                    "priority should be betwheen 0 and 1".to_string(),
+                ));
             }
         }
         return Ok(self.url_entry);
@@ -100,7 +104,7 @@ impl Into<UrlEntry> for UrlEntryBuilder {
 
 impl Into<UrlEntry> for Url {
     /// Notably does not panic
-    fn into( self ) -> UrlEntry {
+    fn into(self) -> UrlEntry {
         UrlEntry {
             loc: Location::from(self),
             lastmod: LastMod::None,
@@ -135,7 +139,7 @@ impl Into<UrlEntry> for &'static str {
 }
 
 /// Sitemap entry. Contains url location and modification time.
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct SiteMapEntry {
     /// URL of the sitemap.
     pub loc: Location,
@@ -153,13 +157,14 @@ impl SiteMapEntry {
 
     /// Creates builder for `SiteMapEntry` structure
     pub fn builder() -> SiteMapEntryBuilder {
-        SiteMapEntryBuilder { sitemap_entry: SiteMapEntry::new() }
+        SiteMapEntryBuilder {
+            sitemap_entry: SiteMapEntry::new(),
+        }
     }
 }
 
-
 /// Builds `SiteMapEntry` structure
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct SiteMapEntryBuilder {
     sitemap_entry: SiteMapEntry,
 }
@@ -184,7 +189,9 @@ impl SiteMapEntryBuilder {
         if let Location::Url(_) = self.sitemap_entry.loc {
             Ok(self.sitemap_entry)
         } else {
-            Err(Error::Invalid("Required a location in the sitemap".to_string()))
+            Err(Error::Invalid(
+                "Required a location in the sitemap".to_string(),
+            ))
         }
     }
 }
@@ -198,9 +205,9 @@ impl Into<SiteMapEntry> for SiteMapEntryBuilder {
 
 impl Into<SiteMapEntry> for Url {
     /// Notably does not panic
-    fn into( self ) -> SiteMapEntry {
+    fn into(self) -> SiteMapEntry {
         SiteMapEntry {
-            loc: Location::from( self ),
+            loc: Location::from(self),
             lastmod: LastMod::None,
         }
     }
@@ -229,7 +236,7 @@ impl Into<SiteMapEntry> for &'static str {
 }
 
 /// Url location.
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub enum Location {
     /// No value.
     None,
@@ -256,7 +263,7 @@ impl Location {
         return match *self {
             Location::Url(_) => true,
             _ => false,
-        }
+        };
     }
 
     /// Checks is location equals none
@@ -264,7 +271,7 @@ impl Location {
         return match *self {
             Location::None => true,
             _ => false,
-        }
+        };
     }
 
     /// Checks is location contains parse error.
@@ -272,13 +279,13 @@ impl Location {
         return match *self {
             Location::ParseErr(_) => true,
             _ => false,
-        }
+        };
     }
 }
 impl From<Url> for Location {
     ///Wraps a Url into a Location enum
-    fn from( url: Url ) -> Self {
-        Location::Url( url )
+    fn from(url: Url) -> Self {
+        Location::Url(url)
     }
 }
 
@@ -296,7 +303,7 @@ impl From<String> for Location {
     }
 }
 /// The date of last modification of the resource.
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub enum LastMod {
     /// No value.
     None,
@@ -320,8 +327,9 @@ impl LastMod {
 }
 impl From<&str> for LastMod {
     fn from(time: &str) -> Self {
-        let date = OffsetDateTime::parse(time, &Rfc3339)
-            .or_else(|_err| Date::parse(time, W3C_DATE).map(|date| date.with_time(time!(0:00)).assume_utc()));
+        let date = OffsetDateTime::parse(time, &Rfc3339).or_else(|_err| {
+            Date::parse(time, W3C_DATE).map(|date| date.with_time(time!(0:00)).assume_utc())
+        });
 
         match date {
             Ok(time) => {
@@ -334,7 +342,7 @@ impl From<&str> for LastMod {
     }
 }
 /// Error parsing URL Priority.
-#[derive(PartialEq,Debug,Clone)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct ChangeFreqParseError {
     /// Error description
     pub description: String,
@@ -342,7 +350,9 @@ pub struct ChangeFreqParseError {
 impl ChangeFreqParseError {
     /// Creates new error.
     pub fn new(description: String) -> ChangeFreqParseError {
-        ChangeFreqParseError { description: description }
+        ChangeFreqParseError {
+            description: description,
+        }
     }
 }
 impl fmt::Display for ChangeFreqParseError {
@@ -351,7 +361,7 @@ impl fmt::Display for ChangeFreqParseError {
     }
 }
 /// How frequently the page is likely to change.
-#[derive(PartialEq,Debug,Clone)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum ChangeFreq {
     /// No value.
     None,
@@ -385,7 +395,6 @@ impl ChangeFreq {
             ChangeFreq::Never => "never",
             ChangeFreq::ParseErr(_) => "",
         }
-
     }
 }
 impl From<String> for ChangeFreq {
@@ -421,7 +430,7 @@ impl From<String> for ChangeFreq {
 }
 
 /// The priority of this URL relative to other URLs on the site.
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub enum Priority {
     /// No value.
     None,

@@ -3,8 +3,8 @@
 //!
 //! [Reading sitemap](reader/index.html#examples).
 //! [Writing sitemap](writer/index.html#examples).
-pub mod structs;
-pub mod reader;
-pub mod writer;
 mod errors;
+pub mod reader;
+pub mod structs;
+pub mod writer;
 pub use errors::Error;
