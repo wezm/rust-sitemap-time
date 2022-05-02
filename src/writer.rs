@@ -116,7 +116,7 @@ impl<T: Write + Sized> UrlSetWriter<T> {
         }
         if let Priority::Value(priority) = url.priority {
             self.sitemap
-                .write_content_element("priority", priority.to_string().as_str())?;
+                .write_content_element("priority", &format!("{:.1}", priority))?;
         }
         self.sitemap
             .writer
