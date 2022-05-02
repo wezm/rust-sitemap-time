@@ -76,7 +76,7 @@ impl<T: Read + Sized> SiteMapReader<T> {
     }
     fn text_content(&mut self, data: String) {
         if self.path == vec!["urlset", "url", "loc"] {
-            self.url_item.loc = structs::Location::from(data);
+            self.url_item.loc = structs::Location::from(data.as_str());
         } else if self.path == vec!["urlset", "url", "lastmod"] {
             self.url_item.lastmod = structs::LastMod::from(data.as_str());
         } else if self.path == vec!["urlset", "url", "changefreq"] {
@@ -84,7 +84,7 @@ impl<T: Read + Sized> SiteMapReader<T> {
         } else if self.path == vec!["urlset", "url", "priority"] {
             self.url_item.priority = structs::Priority::from(data);
         } else if self.path == vec!["sitemapindex", "sitemap", "loc"] {
-            self.sitemap_item.loc = structs::Location::from(data);
+            self.sitemap_item.loc = structs::Location::from(data.as_str());
         } else if self.path == vec!["sitemapindex", "sitemap", "lastmod"] {
             self.sitemap_item.lastmod = structs::LastMod::from(data.as_str());
         }

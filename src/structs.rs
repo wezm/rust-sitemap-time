@@ -54,9 +54,8 @@ pub struct UrlEntryBuilder {
 
 impl UrlEntryBuilder {
     /// Defines `loc` tag
-    pub fn loc<S: Into<String>>(mut self, url: S) -> UrlEntryBuilder {
-        let url = url.into();
-        self.url_entry.loc = Location::from(url);
+    pub fn loc<S: AsRef<str>>(mut self, url: S) -> UrlEntryBuilder {
+        self.url_entry.loc = Location::from(url.as_ref());
         return self;
     }
 
@@ -114,7 +113,7 @@ impl Into<UrlEntry> for Url {
     }
 }
 
-impl Into<UrlEntry> for String {
+impl Into<UrlEntry> for &str {
     /// Panics when url is invalid
     fn into(self) -> UrlEntry {
         let location = Location::from(self);
@@ -127,14 +126,6 @@ impl Into<UrlEntry> for String {
             changefreq: ChangeFreq::None,
             priority: Priority::None,
         }
-    }
-}
-
-impl Into<UrlEntry> for &'static str {
-    /// Panics when url is invalid
-    fn into(self) -> UrlEntry {
-        let location: String = self.into();
-        return location.into();
     }
 }
 
@@ -171,9 +162,8 @@ pub struct SiteMapEntryBuilder {
 
 impl SiteMapEntryBuilder {
     /// Defines `loc` tag
-    pub fn loc<S: Into<String>>(mut self, url: S) -> SiteMapEntryBuilder {
-        let url = url.into();
-        self.sitemap_entry.loc = Location::from(url);
+    pub fn loc<S: AsRef<str>>(mut self, url: S) -> SiteMapEntryBuilder {
+        self.sitemap_entry.loc = Location::from(url.as_ref());
         return self;
     }
 
@@ -213,7 +203,7 @@ impl Into<SiteMapEntry> for Url {
     }
 }
 
-impl Into<SiteMapEntry> for String {
+impl Into<SiteMapEntry> for &str {
     /// Panics when url is invalid
     fn into(self) -> SiteMapEntry {
         let location = Location::from(self);
@@ -224,14 +214,6 @@ impl Into<SiteMapEntry> for String {
             loc: location,
             lastmod: LastMod::None,
         }
-    }
-}
-
-impl Into<SiteMapEntry> for &'static str {
-    /// Panics when url is invalid
-    fn into(self) -> SiteMapEntry {
-        let location: String = self.into();
-        return location.into();
     }
 }
 
@@ -289,9 +271,9 @@ impl From<Url> for Location {
     }
 }
 
-impl From<String> for Location {
+impl From<&str> for Location {
     /// Parses Url from string.
-    fn from(url: String) -> Self {
+    fn from(url: &str) -> Self {
         match Url::parse(&url) {
             Ok(url) => {
                 return Location::Url(url);
