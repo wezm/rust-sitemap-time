@@ -4,12 +4,14 @@ use url::Url;
 use url;
 use std::convert::From;
 use std::convert::Into;
-use chrono_utils;
-use chrono::DateTime;
-use chrono::FixedOffset;
-use chrono_utils::parser::parse_w3c_datetime;
+use time::{Date, OffsetDateTime};
 use std::fmt;
 use std::num;
+use time::format_description::FormatItem;
+use time::format_description::well_known::Rfc3339;
+use time::macros::{format_description, time};
+
+const W3C_DATE: &[FormatItem] = format_description!("[year]-[month]-[day]");
 
 /// Url entry. Contains url location, modification time,
 /// priority, update frequency.
@@ -57,7 +59,7 @@ impl UrlEntryBuilder {
     }
 
     /// Defines `lastmod` tag
-    pub fn lastmod(mut self, date: DateTime<FixedOffset>) -> UrlEntryBuilder {
+    pub fn lastmod(mut self, date: OffsetDateTime) -> UrlEntryBuilder {
         self.url_entry.lastmod = LastMod::DateTime(date);
         return self;
     }
@@ -171,7 +173,7 @@ impl SiteMapEntryBuilder {
     }
 
     /// Defines `lastmod` tag
-    pub fn lastmod(mut self, date: DateTime<FixedOffset>) -> SiteMapEntryBuilder {
+    pub fn lastmod(mut self, date: OffsetDateTime) -> SiteMapEntryBuilder {
         self.sitemap_entry.lastmod = LastMod::DateTime(date);
         return self;
     }
@@ -299,13 +301,13 @@ pub enum LastMod {
     /// No value.
     None,
     /// Modification time
-    DateTime(DateTime<FixedOffset>),
+    DateTime(OffsetDateTime),
     /// Parse error
-    ParseErr(chrono_utils::parser::error::ParseError),
+    ParseErr(time::error::Parse),
 }
 impl LastMod {
     /// Returns modification time if present.
-    pub fn get_time(&self) -> Option<DateTime<FixedOffset>> {
+    pub fn get_time(&self) -> Option<OffsetDateTime> {
         match *self {
             LastMod::DateTime(ref time) => {
                 return Some(time.clone());
@@ -316,9 +318,12 @@ impl LastMod {
         }
     }
 }
-impl From<String> for LastMod {
-    fn from(time: String) -> Self {
-        match parse_w3c_datetime(&time) {
+impl From<&str> for LastMod {
+    fn from(time: &str) -> Self {
+        let date = OffsetDateTime::parse(time, &Rfc3339)
+            .or_else(|_err| Date::parse(time, W3C_DATE).map(|date| date.with_time(time!(0:00)).assume_utc()));
+
+        match date {
             Ok(time) => {
                 return LastMod::DateTime(time);
             }

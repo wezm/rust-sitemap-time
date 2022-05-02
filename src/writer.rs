@@ -19,6 +19,7 @@
 //! }
 //! ```
 use std::io::Write;
+use time::format_description::well_known::Rfc3339;
 use xml::writer::{EventWriter, EmitterConfig, XmlEvent};
 use crate::Error;
 use crate::structs::{UrlEntry, Location, LastMod, ChangeFreq, Priority, SiteMapEntry};
@@ -100,7 +101,7 @@ impl<T: Write + Sized> UrlSetWriter<T> {
             self.sitemap.write_content_element("loc", loc.as_str())?;
         }
         if let LastMod::DateTime(lastmod) = url.lastmod {
-            self.sitemap.write_content_element("lastmod", lastmod.to_rfc3339().as_str())?;
+            self.sitemap.write_content_element("lastmod", &lastmod.format(&Rfc3339).unwrap())?;
         }
         match url.changefreq {
             ChangeFreq::ParseErr(_) => {}
@@ -138,7 +139,7 @@ impl<T: Write + Sized> SiteMapIndexWriter<T> {
             self.sitemap.write_content_element("loc", loc.as_str())?;
         }
         if let LastMod::DateTime(lastmod) = sitemapentry.lastmod {
-            self.sitemap.write_content_element("lastmod", lastmod.to_rfc3339().as_str())?;
+            self.sitemap.write_content_element("lastmod", &lastmod.format(&Rfc3339).unwrap())?;
         }
         self.sitemap.writer.write(XmlEvent::end_element().name("sitemap"))?;
         Ok(())

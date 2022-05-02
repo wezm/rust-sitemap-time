@@ -1,6 +1,6 @@
+use time::macros::datetime;
 use sitemap::writer::SiteMapWriter;
 use sitemap::structs::{UrlEntry, ChangeFreq, SiteMapEntry};
-use chrono::{DateTime, NaiveDate, FixedOffset};
 
 static CONTENT: &str =
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
@@ -9,7 +9,7 @@ static CONTENT: &str =
     \
      <loc>http://www.example.com/index.html</loc>
     \
-     <lastmod>2016-07-08T09:10:11+00:00</lastmod>
+     <lastmod>2016-07-08T09:10:11Z</lastmod>
     <changefreq>daily</changefreq>
     \
      <priority>0.2</priority>
@@ -17,7 +17,7 @@ static CONTENT: &str =
   <url>
     <loc>http://www.example.com/other.html</loc>
     \
-     <lastmod>2016-07-18T09:10:11+00:00</lastmod>
+     <lastmod>2016-07-18T09:10:11Z</lastmod>
     <changefreq>monthly</changefreq>
     \
      <priority>0.1</priority>
@@ -28,7 +28,7 @@ static CONTENT: &str =
     \
      <loc>http://www.example.com/other_sitemap.xml</loc>
     \
-     <lastmod>2016-07-18T09:10:11+00:00</lastmod>
+     <lastmod>2016-07-18T09:10:11Z</lastmod>
   </sitemap>
 </sitemapindex>";
 
@@ -39,8 +39,7 @@ fn test_write_sitemap() {
     {
         let sitemap_writer = SiteMapWriter::new(&mut output);
         let mut urlwriter = sitemap_writer.start_urlset().expect("Can't write the file");
-        let date = DateTime::from_utc(NaiveDate::from_ymd(2016, 7, 8).and_hms(9, 10, 11),
-                                      FixedOffset::east(0));
+        let date = datetime!(2016-07-08 9:10:11 +0:00);
         let url_entry = UrlEntry::builder()
             .loc("http://www.example.com/index.html")
             .changefreq(ChangeFreq::Daily)
@@ -49,8 +48,7 @@ fn test_write_sitemap() {
             .build()
             .expect("valid");
         urlwriter.url(url_entry).expect("Can't write the file");
-        let date1 = DateTime::from_utc(NaiveDate::from_ymd(2016, 7, 18).and_hms(9, 10, 11),
-                                       FixedOffset::east(0));
+        let date1 = datetime!(2016-7-18 9:10:11 +0:00);
         let url_entry = UrlEntry::builder()
             .loc("http://www.example.com/other.html")
             .changefreq(ChangeFreq::Monthly)

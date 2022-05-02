@@ -78,7 +78,7 @@ impl<T: Read + Sized> SiteMapReader<T> {
         if self.path == vec!["urlset", "url", "loc"] {
             self.url_item.loc = structs::Location::from(data);
         } else if self.path == vec!["urlset", "url", "lastmod"] {
-            self.url_item.lastmod = structs::LastMod::from(data);
+            self.url_item.lastmod = structs::LastMod::from(data.as_str());
         } else if self.path == vec!["urlset", "url", "changefreq"] {
             self.url_item.changefreq = structs::ChangeFreq::from(data);
         } else if self.path == vec!["urlset", "url", "priority"] {
@@ -86,7 +86,7 @@ impl<T: Read + Sized> SiteMapReader<T> {
         } else if self.path == vec!["sitemapindex", "sitemap", "loc"] {
             self.sitemap_item.loc = structs::Location::from(data);
         } else if self.path == vec!["sitemapindex", "sitemap", "lastmod"] {
-            self.sitemap_item.lastmod = structs::LastMod::from(data);
+            self.sitemap_item.lastmod = structs::LastMod::from(data.as_str());
         }
     }
     fn close_tag(&mut self) -> Option<SiteMapEntity> {
