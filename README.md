@@ -5,6 +5,8 @@ sitemap is a [sitemap.xml] library for the [Rust](http://www.rust-lang.org/) pro
 This is a fork of <https://github.com/svmk/rust-sitemap> that uses the [time] crate instead of [chrono].
 
 [sitemap.xml]: https://www.sitemaps.org/protocol.html
+[time]: https://lib.rs/crates/time
+[chrono]: https://lib.rs/crates/chrono
 
 ## Features
 * Streaming reading sitemap
