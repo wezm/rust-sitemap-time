@@ -2,11 +2,17 @@
 
 sitemap is a [sitemap.xml] library for the [Rust](http://www.rust-lang.org/) programming language.
 
-This is a fork of <https://github.com/svmk/rust-sitemap> that uses the [time] crate instead of [chrono].
+This is a fork of <https://github.com/svmk/rust-sitemap> that uses the [time]
+crate instead of [chrono].
+
+Note that this version is less compliant regarding `<lastmod>` elements
+compared to the original. The upstream crate fully supports [W3C dates][w3c-date],
+this version only supports a full ISO 8601 date or `YYYY-MM-DD`.
 
 [sitemap.xml]: https://www.sitemaps.org/protocol.html
 [time]: https://lib.rs/crates/time
 [chrono]: https://lib.rs/crates/chrono
+[wc3-date]: https://www.w3.org/TR/NOTE-datetime
 
 ## Features
 * Streaming reading sitemap
